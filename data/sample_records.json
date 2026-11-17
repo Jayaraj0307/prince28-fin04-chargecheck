@@ -2,38 +2,57 @@
 [
   {
     "id": "001",
-    "bank_name": "Demo Bank A",
-    "account_name": "Student Savings Account",
-    "account_type": "savings",
-    "minimum_balance_inr": 0,
-    "account_opening_fee_inr": 0,
-    "annual_maintenance_fee_inr": 0,
-    "debit_card_annual_fee_inr": 150,
-    "sms_alert_fee_inr": 60,
-    "notes": "Zero minimum balance student account."
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "76%-100% shortfall",
+    "charge_amount": 100,
+    "gst": null,
+    "effective_from": null
   },
   {
     "id": "002",
-    "bank_name": "Demo Bank B",
-    "account_name": "Basic Savings Account",
-    "account_type": "savings",
-    "minimum_balance_inr": 1000,
-    "account_opening_fee_inr": 0,
-    "annual_maintenance_fee_inr": 200,
-    "debit_card_annual_fee_inr": 200,
-    "sms_alert_fee_inr": 100,
-    "notes": "Requires a minimum balance."
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "51%-75% shortfall",
+    "charge_amount": 75,
+    "gst": null,
+    "effective_from": null
   },
   {
     "id": "003",
-    "bank_name": "Demo Bank C",
-    "account_name": "Digital Savings Account",
-    "account_type": "savings",
-    "minimum_balance_inr": 0,
-    "account_opening_fee_inr": 0,
-    "annual_maintenance_fee_inr": 100,
-    "debit_card_annual_fee_inr": 250,
-    "sms_alert_fee_inr": 0,
-    "notes": "Digital account with no SMS alert fee."
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "26%-50% shortfall",
+    "charge_amount": 50,
+    "gst": null,
+    "effective_from": null
+  },
+  {
+    "id": "004",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "11%-25% shortfall",
+    "charge_amount": 25,
+    "gst": null,
+    "effective_from": null
+  },
+  {
+    "id": "005",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "1%-10% shortfall",
+    "charge_amount": 10,
+    "gst": null,
+    "effective_from": null
   }
 ]
