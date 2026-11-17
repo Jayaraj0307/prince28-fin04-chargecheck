@@ -1,0 +1,39 @@
+
+[
+  {
+    "id": "001",
+    "bank_name": "Demo Bank A",
+    "account_name": "Student Savings Account",
+    "account_type": "savings",
+    "minimum_balance_inr": 0,
+    "account_opening_fee_inr": 0,
+    "annual_maintenance_fee_inr": 0,
+    "debit_card_annual_fee_inr": 150,
+    "sms_alert_fee_inr": 60,
+    "notes": "Zero minimum balance student account."
+  },
+  {
+    "id": "002",
+    "bank_name": "Demo Bank B",
+    "account_name": "Basic Savings Account",
+    "account_type": "savings",
+    "minimum_balance_inr": 1000,
+    "account_opening_fee_inr": 0,
+    "annual_maintenance_fee_inr": 200,
+    "debit_card_annual_fee_inr": 200,
+    "sms_alert_fee_inr": 100,
+    "notes": "Requires a minimum balance."
+  },
+  {
+    "id": "003",
+    "bank_name": "Demo Bank C",
+    "account_name": "Digital Savings Account",
+    "account_type": "savings",
+    "minimum_balance_inr": 0,
+    "account_opening_fee_inr": 0,
+    "annual_maintenance_fee_inr": 100,
+    "debit_card_annual_fee_inr": 250,
+    "sms_alert_fee_inr": 0,
+    "notes": "Digital account with no SMS alert fee."
+  }
+]
