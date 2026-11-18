@@ -1,0 +1,58 @@
+
+[
+  {
+    "id": "001",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "76%-100% shortfall",
+    "charge_amount": 100,
+    "gst": null,
+    "effective_from": null
+  },
+  {
+    "id": "002",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "51%-75% shortfall",
+    "charge_amount": 75,
+    "gst": null,
+    "effective_from": null
+  },
+  {
+    "id": "003",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "26%-50% shortfall",
+    "charge_amount": 50,
+    "gst": null,
+    "effective_from": null
+  },
+  {
+    "id": "004",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "11%-25% shortfall",
+    "charge_amount": 25,
+    "gst": null,
+    "effective_from": null
+  },
+  {
+    "id": "005",
+    "bank": "Indian Bank",
+    "account_variant": "Savings Bank Account",
+    "charge_type": "Non-maintenance of minimum monthly average balance",
+    "location_class": "All branch classes; minimum balance varies by location",
+    "free_limit": "1%-10% shortfall",
+    "charge_amount": 10,
+    "gst": null,
+    "effective_from": null
+  }
+]
