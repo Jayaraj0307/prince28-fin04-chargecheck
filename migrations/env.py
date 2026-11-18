@@ -6,6 +6,9 @@ from sqlalchemy import pool
 from sqlalchemy.engine import Connection
 from sqlalchemy.ext.asyncio import async_engine_from_config
 
+from chargecheck.config import get_settings
+from chargecheck.db.models import Base
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
@@ -16,8 +19,8 @@ if config.config_file_name is not None:
     fileConfig(config.config_file_name)
 
 # Our tables, so "alembic revision --autogenerate" can compare them with the database.
-from chargecheck.config import get_settings
-from chargecheck.db.models import Base
+
+
 
 target_metadata = Base.metadata
 

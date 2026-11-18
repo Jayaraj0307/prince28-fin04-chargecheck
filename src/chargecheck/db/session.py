@@ -1,7 +1,8 @@
-"""Async PostgreSQL engine and session management."""
+﻿"""Async PostgreSQL engine and session management."""
 
 from collections.abc import AsyncGenerator
 
+from fastapi import HTTPException
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
     async_sessionmaker,
@@ -12,10 +13,14 @@ from chargecheck.config import Settings, get_settings
 
 
 def make_engine(settings: Settings):
+    if not settings.database_url:
+        raise ValueError("DATABASE_URL is required to connect to PostgreSQL")
+
     return create_async_engine(
         settings.database_url,
         pool_pre_ping=True,
-        poolclass=__import__("sqlalchemy.pool", fromlist=["NullPool"]).NullPool,
+        pool_size=settings.db_pool_size,
+        max_overflow=settings.db_max_overflow,
     )
 
 
@@ -27,14 +32,22 @@ def make_sessionmaker(engine):
     )
 
 
-engine = make_engine(get_settings())
-SessionLocal = make_sessionmaker(engine)
+settings = get_settings()
+engine = make_engine(settings) if settings.database_url else None
+SessionLocal = make_sessionmaker(engine) if engine is not None else None
 
 
 async def get_session() -> AsyncGenerator[AsyncSession, None]:
+    if SessionLocal is None:
+        raise HTTPException(
+            status_code=503,
+            detail="Database is not configured",
+        )
+
     async with SessionLocal() as session:
         yield session
 
 
 async def close_db() -> None:
-    await engine.dispose()
+    if engine is not None:
+        await engine.dispose()

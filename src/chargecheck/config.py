@@ -1,4 +1,4 @@
-"""All settings come from environment variables (or a local .env file)."""
+﻿"""All settings come from environment variables (or a local .env file)."""
 
 from functools import lru_cache
 from pathlib import Path
@@ -12,13 +12,14 @@ from chargecheck.db.url import to_asyncpg_url
 
 class Settings(BaseSettings):
     model_config = SettingsConfigDict(
-        env_file=".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=".env",
+        env_file_encoding="utf-8",
+        extra="ignore",
     )
 
     app_name: str = "chargecheck"
-    # No defaults on purpose: if these are missing, the app refuses to start (fail fast).
     app_env: Literal["local", "ci", "production"]
-    database_url: str
+    database_url: str | None = None
     log_level: Literal["DEBUG", "INFO", "WARNING", "ERROR"] = "INFO"
     data_file: Path = Path("data/sample_records.json")
     db_pool_size: int = 5
@@ -26,8 +27,8 @@ class Settings(BaseSettings):
 
     @field_validator("database_url")
     @classmethod
-    def _asyncpg(cls, value: str) -> str:
-        return to_asyncpg_url(value)
+    def _asyncpg(cls, value: str | None) -> str | None:
+        return to_asyncpg_url(value) if value else value
 
 
 @lru_cache
