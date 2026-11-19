@@ -39,6 +39,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     v1 = APIRouter(prefix="/v1")
     v1.include_router(documents.router)
+    v1.include_router(documents.database_router)
     app.include_router(health.router)
     app.include_router(v1)
+
     return app

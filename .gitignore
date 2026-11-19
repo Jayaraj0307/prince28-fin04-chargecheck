@@ -1,15 +1,18 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 .venv/
 .pytest_cache/
 .ruff_cache/
-# Secrets: never commit
+
+# Secrets
 .env
 .env.*
 !.env.example
-# Big data stays out of Git
+
+# Data
 data/raw/
+
 # Editors / OS
 .vscode/
 .idea/
