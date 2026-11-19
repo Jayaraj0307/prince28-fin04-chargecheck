@@ -1,0 +1,62 @@
+
+services:
+  db:
+    image: pgvector/pgvector:pg17
+    container_name: chargecheck-db
+    environment:
+      POSTGRES_DB: chargecheck
+      POSTGRES_USER: chargecheck
+      POSTGRES_PASSWORD: chargecheck_local
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./docker/initdb:/docker-entrypoint-initdb.d
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chargecheck -d chargecheck"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: chargecheck-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  migrate:
+    build: .
+    container_name: chargecheck-migrate
+    environment:
+      APP_ENV: production
+      DATABASE_URL: postgresql+asyncpg://chargecheck:chargecheck_local@db:5432/chargecheck
+    command: ["sh", "-c", "alembic upgrade head && python scripts/load_db.py"]
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+
+  api:
+    build: .
+    container_name: chargecheck-api
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: chargecheck
+      APP_ENV: production
+      LOG_LEVEL: INFO
+      DATABASE_URL: postgresql+asyncpg://chargecheck:chargecheck_local@db:5432/chargecheck
+      DATA_FILE: data/sample_records.json
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
