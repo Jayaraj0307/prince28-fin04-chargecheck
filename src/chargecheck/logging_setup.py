@@ -1,4 +1,4 @@
-"""JSON logs: one line per event, every line carries the request ID."""
+﻿"""JSON logs: one line per event, every line carries the request ID."""
 
 import json
 import logging
@@ -20,17 +20,21 @@ class JsonFormatter(logging.Formatter):
             "msg": record.getMessage(),
             "request_id": request_id_ctx.get(),
         }
+
         for key in EXTRA_FIELDS:
             if hasattr(record, key):
                 payload[key] = getattr(record, key)
+
         if record.exc_info:
             payload["exc"] = self.formatException(record.exc_info)
+
         return json.dumps(payload, ensure_ascii=False)
 
 
 def setup_logging(level: str = "INFO") -> None:
     handler = logging.StreamHandler(sys.stdout)
     handler.setFormatter(JsonFormatter())
+
     root = logging.getLogger()
     root.handlers[:] = [handler]
     root.setLevel(level)
