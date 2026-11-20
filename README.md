@@ -1,8 +1,8 @@
 # ChargeCheck
 
-Compares bank service charges (minimum balance, ATM, NEFT, SMS, cards) across 12 banks and estimates the monthly cost for a person's actual usage.
+ChargeCheck helps students and parents compare savings accounts and avoid hidden banking charges.
 
-**Status:** Day 1 foundation (FastAPI skeleton, quality gates). Live URL from Day 5.
+**Status:** FastAPI application, PostgreSQL database, Alembic migrations, Docker Compose, Redis and automated tests.
 
 ## Who it's for
 
@@ -10,42 +10,114 @@ First-year college student in Chennai and her parents choosing a savings account
 
 ## The problem
 
-Every bank publishes a long schedule of charges that varies by account type, location (metro/urban/semi-urban/rural) and number of transactions, and changes with 'w.e.f.' dates.
+Every bank publishes a long schedule of charges that varies by account type, location (metro/urban/semi-urban/rural), number of transactions and effective dates.
 
 ## Data sources
 
-Schedules of service charges of 12 banks (SBI, Indian Bank, IOB, Canara, HDFC, ICICI, Axis, Kotak, South Indian Bank, Karur Vysya, City Union, TMB) and RBI customer-service circulars (incl. BSBD accounts).
+Schedules of service charges of 12 banks (SBI, Indian Bank, IOB, Canara, HDFC, ICICI, Axis, Kotak, South Indian Bank, Karur Vysya, City Union, TMB) and RBI customer-service circulars (including BSBD accounts).
 
 - https://sbi.bank.in/
 - https://www.southindianbank.bank.in/userfiles/file/compendium%20of%20service%20charges%20new.pdf
 - https://www.rbi.org.in/
-- Terms: Public bank disclosures. Indian banks moved to .bank.in domains in 2025: find each bank's 'Schedule of charges' page and record the URL and date.
-
-## Hardest problem (my interview story)
-
-Charges depend on account variant x location x channel x monthly count, with effective dates. The answer must pick the right row and compute monthly cost in code from a usage profile.
 
 ## Signature feature
 
-My-usage cost calculator: enter monthly ATM, NEFT, cash and SMS use and see each bank's estimated monthly cost.
+My-usage cost calculator: enter monthly ATM, NEFT, cash and SMS use and compare estimated bank charges.
 
-## Target metric
+## Run locally
 
-Monthly cost exact for 100% of 30 usage profiles; charge lookups correct for 90%+ of 50 questions.
-
-## Run it locally
+Install dependencies:
 
 ```bash
 uv sync
-cp .env.example .env   # Windows: copy .env.example .env
+```
+
+Create environment file (Windows PowerShell):
+
+```powershell
+Copy-Item .env.example .env
+```
+
+Start the development server:
+
+```bash
 uv run uvicorn chargecheck.api.main:create_app --factory --reload
 ```
 
-Then open http://localhost:8000/docs
+Open http://localhost:8000/docs
 
-## Checks
+## Docker setup
+
+Start PostgreSQL, Redis and API:
 
 ```bash
-uv run pytest
-uv run ruff check .
+docker compose -f compose.yaml up --build -d
 ```
+
+Check running services:
+
+```bash
+docker compose -f compose.yaml ps
+```
+
+Stop services:
+
+```bash
+docker compose -f compose.yaml down
+```
+
+## Database
+
+- PostgreSQL for persistent storage.
+- SQLAlchemy for database models and access.
+- Alembic for database migrations.
+- Redis as a supporting service.
+
+## Tests and coverage
+
+Run tests:
+
+```bash
+uv run pytest -v
+```
+
+Run coverage:
+
+```bash
+uv run pytest --cov=chargecheck --cov-report=term-missing
+```
+
+Generate HTML coverage:
+
+```bash
+uv run pytest --cov=chargecheck --cov-report=html
+```
+
+HTML report is generated in the `htmlcov` directory.
+
+## Code quality
+
+```bash
+uv run ruff check .
+uv run ruff format .
+```
+
+## Makefile commands
+
+```bash
+make help
+make install
+make dev
+make test
+make coverage
+make lint
+make format
+make check
+make docker-up
+make docker-down
+make docker-logs
+```
+
+## Database verification
+
+See [NOTES.md](NOTES.md) for PostgreSQL index verification and EXPLAIN query-plan evidence.
