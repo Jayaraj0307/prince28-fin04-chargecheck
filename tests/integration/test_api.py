@@ -1,9 +1,6 @@
-
 import pytest
-from fastapi.testclient import TestClient
 from pydantic import ValidationError
 
-from chargecheck.api.main import create_app
 from chargecheck.config import Settings
 
 

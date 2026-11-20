@@ -1,4 +1,4 @@
-﻿"""JSON logs: one line per event, every line carries the request ID."""
+"""JSON logs: one line per event, every line carries the request ID."""
 
 import json
 import logging

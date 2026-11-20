@@ -1,4 +1,4 @@
-﻿"""All settings come from environment variables (or a local .env file)."""
+"""All settings come from environment variables (or a local .env file)."""
 
 from functools import lru_cache
 from pathlib import Path
@@ -24,6 +24,8 @@ class Settings(BaseSettings):
     data_file: Path = Path("data/sample_records.json")
     db_pool_size: int = 5
     db_max_overflow: int = 5
+    # The commit this image was built from.
+    git_sha: str = "dev"
 
     @field_validator("database_url")
     @classmethod

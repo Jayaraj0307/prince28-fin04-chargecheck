@@ -21,9 +21,7 @@ KNOWN = {"id", "title", "source_url", "licence", "doc_type", "published_on"}
 
 
 def fingerprint(record: dict) -> str:
-    canonical = json.dumps(
-        record, sort_keys=True, ensure_ascii=False, separators=(",", ":")
-    )
+    canonical = json.dumps(record, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
     return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
@@ -62,19 +60,14 @@ async def main() -> None:
                 inserted += 1
             elif old != row["sha256"]:
                 await session.execute(
-                    update(Document)
-                    .where(Document.external_id == row["external_id"])
-                    .values(**row)
+                    update(Document).where(Document.external_id == row["external_id"]).values(**row)
                 )
                 updated += 1
             else:
                 unchanged += 1
 
     await engine.dispose()
-    print(
-        f"records={len(records)} inserted={inserted} "
-        f"updated={updated} unchanged={unchanged}"
-    )
+    print(f"records={len(records)} inserted={inserted} updated={updated} unchanged={unchanged}")
 
 
 if __name__ == "__main__":

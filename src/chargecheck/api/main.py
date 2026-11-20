@@ -1,4 +1,3 @@
-
 """App factory: build a fully wired FastAPI app from settings."""
 
 import logging
