@@ -19,7 +19,11 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-editable
 
 # Stage 2: Runtime image
+# Stage 2: Runtime image
 FROM python:3.12-slim AS runtime
+
+ARG GIT_SHA=dev
+ENV GIT_SHA=${GIT_SHA}
 
 WORKDIR /app
 

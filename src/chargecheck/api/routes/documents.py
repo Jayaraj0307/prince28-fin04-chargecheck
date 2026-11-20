@@ -1,4 +1,3 @@
-﻿
 """PostgreSQL-backed document API."""
 
 from typing import Annotated

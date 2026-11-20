@@ -1,4 +1,3 @@
-
 """Loads the hand-entered records from data/sample_records.json."""
 
 import json
@@ -17,9 +16,7 @@ class RecordStore:
         data = json.loads(self.path.read_text(encoding="utf-8"))
 
         if not isinstance(data, list):
-            raise TypeError(
-                f"{self.path} must contain a JSON list of records"
-            )
+            raise TypeError(f"{self.path} must contain a JSON list of records")
 
         records: dict[str, Record] = {}
 
@@ -43,10 +40,7 @@ class RecordStore:
             return rows
 
         needle = q.lower()
-        return [
-            r for r in rows
-            if any(needle in str(v).lower() for v in r.values())
-        ]
+        return [r for r in rows if any(needle in str(v).lower() for v in r.values())]
 
     def get(self, record_id: str) -> Record | None:
         return self._records.get(record_id)
