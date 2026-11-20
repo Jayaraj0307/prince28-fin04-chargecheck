@@ -21,7 +21,6 @@ if config.config_file_name is not None:
 # Our tables, so "alembic revision --autogenerate" can compare them with the database.
 
 
-
 target_metadata = Base.metadata
 
 # Read the database URL from .env / environment (never from alembic.ini).

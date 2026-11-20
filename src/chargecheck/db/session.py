@@ -1,4 +1,4 @@
-﻿"""Async PostgreSQL engine and session management."""
+"""Async PostgreSQL engine and session management."""
 
 from collections.abc import AsyncGenerator
 
