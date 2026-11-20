@@ -5,6 +5,7 @@ def test_health_is_ok(client):
     assert response.json()["app"] == "chargecheck"
     assert response.json()["version"] == "dev"
 
+
 def test_health_supports_head_request(client):
     response = client.head("/health")
     assert response.status_code == 200
