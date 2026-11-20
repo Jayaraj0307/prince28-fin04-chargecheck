@@ -9,7 +9,7 @@ from chargecheck.api.deps import SettingsDep, check_db
 router = APIRouter(tags=["health"])
 
 
-@router.get("/health")
+@router.api_route("/health", methods=["GET", "HEAD"])
 def health(settings: SettingsDep) -> dict[str, str]:
     return {
         "status": "ok",
