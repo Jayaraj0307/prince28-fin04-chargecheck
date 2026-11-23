@@ -1,4 +1,3 @@
-
 """Polite, resumable downloader for the ChargeCheck corpus."""
 
 import asyncio
@@ -28,9 +27,23 @@ MAX_BYTES = 200 * 1024 * 1024
 ATTEMPT_TIMEOUT = 300.0
 
 KNOWN_EXT = {
-    ".pdf", ".html", ".htm", ".json", ".txt", ".md",
-    ".mdx", ".rst", ".adoc", ".csv", ".xml", ".yaml",
-    ".yml", ".zip", ".docx", ".xlsx", ".xls",
+    ".pdf",
+    ".html",
+    ".htm",
+    ".json",
+    ".txt",
+    ".md",
+    ".mdx",
+    ".rst",
+    ".adoc",
+    ".csv",
+    ".xml",
+    ".yaml",
+    ".yml",
+    ".zip",
+    ".docx",
+    ".xlsx",
+    ".xls",
 }
 
 EXT_BY_TYPE = {
@@ -89,9 +102,7 @@ def pick_ext(url: str, content_type: str) -> str:
     suffix = Path(urlsplit(url).path).suffix.lower()
     if suffix in KNOWN_EXT:
         return suffix
-    return EXT_BY_TYPE.get(
-        content_type.split(";")[0].strip().lower(), ".bin"
-    )
+    return EXT_BY_TYPE.get(content_type.split(";")[0].strip().lower(), ".bin")
 
 
 def backoff_delay(
@@ -128,10 +139,7 @@ def read_sources(path: Path) -> list[Source]:
     seen: set[str] = set()
 
     with path.open(encoding="utf-8-sig", newline="") as handle:
-        lines = (
-            line for line in handle
-            if line.strip() and not line.lstrip().startswith("#")
-        )
+        lines = (line for line in handle if line.strip() and not line.lstrip().startswith("#"))
 
         for number, row in enumerate(csv.DictReader(lines), start=1):
             url = (row.get("url") or "").strip()
@@ -139,14 +147,10 @@ def read_sources(path: Path) -> list[Source]:
             licence = (row.get("licence") or "").strip()
 
             if urlsplit(url).scheme not in {"http", "https"}:
-                raise ValueError(
-                    f"sources row {number}: not an http(s) URL: {url!r}"
-                )
+                raise ValueError(f"sources row {number}: not an http(s) URL: {url!r}")
 
             if not name or not licence:
-                raise ValueError(
-                    f"sources row {number}: source and licence are required: {url}"
-                )
+                raise ValueError(f"sources row {number}: source and licence are required: {url}")
 
             if url not in seen:
                 seen.add(url)
@@ -188,9 +192,7 @@ class Manifest:
         record = self.records.get(url)
 
         return bool(
-            record
-            and record["status"] == "downloaded"
-            and (root / record["path"]).is_file()
+            record and record["status"] == "downloaded" and (root / record["path"]).is_file()
         )
 
     def add(self, record: dict) -> None:
@@ -258,9 +260,7 @@ class HostGate:
             if pause > 0:
                 await self._sleep(pause)
 
-            self._next_ok[host] = (
-                time.monotonic() + max(self._delay, crawl_delay)
-            )
+            self._next_ok[host] = time.monotonic() + max(self._delay, crawl_delay)
 
 
 def make_client(max_concurrency: int = 4) -> httpx.AsyncClient:
@@ -283,9 +283,7 @@ async def _download(
             raise DownloadError(
                 f"HTTP {response.status_code}",
                 code=response.status_code,
-                retry_after=retry_after_seconds(
-                    response.headers.get("Retry-After")
-                ),
+                retry_after=retry_after_seconds(response.headers.get("Retry-After")),
             )
 
         content_type = response.headers.get("Content-Type", "")
@@ -293,9 +291,7 @@ async def _download(
         expected_suffix = Path(urlsplit(src.url).path).suffix.lower()
 
         if expected_suffix == ".pdf" and actual_type != "application/pdf":
-            raise DownloadError(
-                f"Expected application/pdf, received {actual_type or 'unknown'}"
-            )
+            raise DownloadError(f"Expected application/pdf, received {actual_type or 'unknown'}")
 
         name = file_stem(src.url) + pick_ext(src.url, content_type)
 
@@ -312,9 +308,7 @@ async def _download(
                     size += len(chunk)
 
                     if size > MAX_BYTES:
-                        raise DownloadError(
-                            f"larger than {MAX_BYTES // 2**20} MB"
-                        )
+                        raise DownloadError(f"larger than {MAX_BYTES // 2**20} MB")
 
                     digest.update(chunk)
                     handle.write(chunk)
@@ -394,10 +388,7 @@ async def fetch_one(
 
                 if exc.retry_after is not None:
                     if exc.retry_after > MAX_WAIT:
-                        error = (
-                            f"{error}: asked to wait "
-                            f"{exc.retry_after:.0f} s, run again later"
-                        )
+                        error = f"{error}: asked to wait {exc.retry_after:.0f} s, run again later"
                         break
 
                     wait = max(wait, exc.retry_after)
@@ -440,10 +431,7 @@ async def fetch_all(
     raw_dir = root / "data" / "raw"
     manifest = Manifest(root / "data" / "manifest.jsonl")
 
-    todo = [
-        src for src in sources
-        if not manifest.done(src.url, root)
-    ]
+    todo = [src for src in sources if not manifest.done(src.url, root)]
 
     counts = {
         "downloaded": 0,

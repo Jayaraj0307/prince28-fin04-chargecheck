@@ -1,4 +1,3 @@
-
 """Command-line tools for fetching and registering ChargeCheck sources."""
 
 import argparse
@@ -32,10 +31,7 @@ def command_urls(args):
     sources = read_sources(SOURCES_FILE)
 
     def report(record):
-        print(
-            f"{record['status']:10} "
-            f"{record['source']} - {record['url']}"
-        )
+        print(f"{record['status']:10} {record['source']} - {record['url']}")
 
     counts = asyncio.run(
         fetch_all(
@@ -57,18 +53,19 @@ def command_repo(args):
     owner, repo = args.repository.split("/", 1)
     git_url = f"https://github.com/{owner}/{repo}.git"
     source_dir = Path(args.path)
-    extensions = {
-        ext.lower() if ext.startswith(".") else f".{ext.lower()}"
-        for ext in args.ext
-    }
+    extensions = {ext.lower() if ext.startswith(".") else f".{ext.lower()}" for ext in args.ext}
 
     with tempfile.TemporaryDirectory() as temporary:
         checkout = Path(temporary) / "repo"
 
         subprocess.run(
             [
-                "git", "clone", "--filter=blob:none",
-                "--no-checkout", git_url, str(checkout),
+                "git",
+                "clone",
+                "--filter=blob:none",
+                "--no-checkout",
+                git_url,
+                str(checkout),
             ],
             check=True,
         )
@@ -79,8 +76,12 @@ def command_repo(args):
         )
         subprocess.run(
             [
-                "git", "-C", str(checkout),
-                "sparse-checkout", "set", args.path,
+                "git",
+                "-C",
+                str(checkout),
+                "sparse-checkout",
+                "set",
+                args.path,
             ],
             check=True,
         )
@@ -184,14 +185,8 @@ def command_sitemap(args):
         existing_urls = set()
         if exists:
             with SOURCES_FILE.open(encoding="utf-8-sig", newline="") as old:
-                lines = (
-                    line for line in old
-                    if line.strip() and not line.lstrip().startswith("#")
-                )
-                existing_urls = {
-                    (row.get("url") or "").strip()
-                    for row in csv.DictReader(lines)
-                }
+                lines = (line for line in old if line.strip() and not line.lstrip().startswith("#"))
+                existing_urls = {(row.get("url") or "").strip() for row in csv.DictReader(lines)}
 
         added = 0
         for url in urls:
@@ -244,9 +239,7 @@ def command_manual(args):
 
 
 def build_parser():
-    parser = argparse.ArgumentParser(
-        description="ChargeCheck source fetching tools"
-    )
+    parser = argparse.ArgumentParser(description="ChargeCheck source fetching tools")
     commands = parser.add_subparsers(dest="command", required=True)
 
     urls = commands.add_parser("urls", help="Fetch URLs from data/sources.csv")
