@@ -20,8 +20,18 @@ def main():
         if line.strip()
     ]
 
+    # Keep only the latest manifest record for each URL.
+    latest_records = {}
+    for record in records:
+        latest_records[record["url"]] = record
+
+    downloaded = [
+        record for record in latest_records.values() if record.get("status") == "downloaded"
+    ]
+
     files = sorted(path for path in RAW.rglob("*") if path.is_file())
     total_bytes = sum(path.stat().st_size for path in files)
+
     pdf_files = [p for p in files if p.suffix.lower() == ".pdf"]
     html_files = [p for p in files if p.suffix.lower() in {".html", ".htm"}]
 
@@ -36,7 +46,6 @@ def main():
     average_page_bytes = pdf_bytes / page_count if page_count else 0
     estimated_bytes = average_page_bytes * args.full_pages
 
-    downloaded = [r for r in records if r.get("status") == "downloaded"]
     banks = sorted({r.get("source", "Unknown") for r in downloaded})
 
     dataset = [
@@ -60,9 +69,16 @@ def main():
             f"— {record.get('path', 'No local path')}"
         )
 
-    dataset += ["", "## Known gaps", "- Review blocked, failed and invalid sources."]
+    dataset += [
+        "",
+        "## Known gaps",
+        "- Review blocked, failed and invalid sources.",
+    ]
 
-    (ROOT / "DATASET.md").write_text("\n".join(dataset) + "\n", encoding="utf-8")
+    (ROOT / "DATASET.md").write_text(
+        "\n".join(dataset) + "\n",
+        encoding="utf-8",
+    )
 
     capacity = [
         "# ChargeCheck Corpus Capacity",
@@ -87,7 +103,10 @@ def main():
 
     docs = ROOT / "docs"
     docs.mkdir(exist_ok=True)
-    (docs / "CAPACITY.md").write_text("\n".join(capacity) + "\n", encoding="utf-8")
+    (docs / "CAPACITY.md").write_text(
+        "\n".join(capacity) + "\n",
+        encoding="utf-8",
+    )
 
     print(f"Files: {len(files)}")
     print(f"PDFs: {len(pdf_files)}")

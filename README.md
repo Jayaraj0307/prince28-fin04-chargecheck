@@ -1,3 +1,4 @@
+[![CI](https://github.com/Jayaraj0307/prince28-fin04-chargecheck/actions/workflows/ci.yml/badge.svg)](https://github.com/Jayaraj0307/prince28-fin04-chargecheck/actions/workflows/ci.yml)
 
 ## Run locally in one command
 
