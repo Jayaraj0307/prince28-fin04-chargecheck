@@ -1,4 +1,3 @@
-
 import argparse
 import json
 from pathlib import Path
@@ -27,18 +26,14 @@ def main():
         latest_records[record["url"]] = record
 
     downloaded = [
-        record
-        for record in latest_records.values()
-        if record.get("status") == "downloaded"
+        record for record in latest_records.values() if record.get("status") == "downloaded"
     ]
 
     files = sorted(path for path in RAW.rglob("*") if path.is_file())
     total_bytes = sum(path.stat().st_size for path in files)
 
     pdf_files = [p for p in files if p.suffix.lower() == ".pdf"]
-    html_files = [
-        p for p in files if p.suffix.lower() in {".html", ".htm"}
-    ]
+    html_files = [p for p in files if p.suffix.lower() in {".html", ".htm"}]
 
     page_count = 0
     for path in pdf_files:
@@ -118,10 +113,7 @@ def main():
     print(f"HTML files: {len(html_files)}")
     print(f"PDF pages: {page_count}")
     print(f"Total size: {total_bytes / (1024 * 1024):.2f} MB")
-    print(
-        f"Estimated {args.full_pages} page corpus: "
-        f"{estimated_bytes / (1024 * 1024):.2f} MB"
-    )
+    print(f"Estimated {args.full_pages} page corpus: {estimated_bytes / (1024 * 1024):.2f} MB")
     print("Created DATASET.md and docs/CAPACITY.md")
 
 
