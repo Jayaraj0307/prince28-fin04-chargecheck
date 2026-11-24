@@ -1,4 +1,5 @@
 import json
+import os
 
 import pytest
 from fastapi.testclient import TestClient
@@ -26,3 +27,11 @@ def client(data_file):
     settings = Settings(app_env="ci", data_file=data_file)
     with TestClient(create_app(settings)) as c:  # "with" runs startup (loads records)
         yield c
+
+
+@pytest.fixture
+def database_url():
+    url = os.getenv("TEST_DATABASE_URL")
+    if not url:
+        pytest.skip("TEST_DATABASE_URL is not set")
+    return url
