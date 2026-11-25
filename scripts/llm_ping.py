@@ -1,4 +1,3 @@
-
 """Check connectivity to the configured Gemini and Groq APIs."""
 
 import asyncio
@@ -26,9 +25,7 @@ async def ping(name: str, base_url: str, api_key: str, model: str) -> None:
         if response.is_success:
             models = response.json().get("data", [])
             available = [item.get("id") for item in models]
-            configured_available = (
-                model in available or f"models/{model}" in available
-            )
+            configured_available = model in available or f"models/{model}" in available
             print(f"{name}: OK ({elapsed:.0f} ms)")
             print(f"Configured model available: {configured_available}")
         else:
