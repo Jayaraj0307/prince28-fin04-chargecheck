@@ -3,13 +3,15 @@
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 
 from chargecheck.api.errors import register_error_handlers
 from chargecheck.api.middleware import request_context
-from chargecheck.api.routes import documents, health
+from chargecheck.api.routes import chat, documents, health
 from chargecheck.config import Settings, get_settings
-from chargecheck.db.session import close_db
+from chargecheck.db.llm_calls import make_recorder
+from chargecheck.db.session import SessionLocal, close_db
+from chargecheck.llm.gateway import build_gateway
 from chargecheck.logging_setup import setup_logging
 
 logger = logging.getLogger("chargecheck")
@@ -22,10 +24,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     @asynccontextmanager
     async def lifespan(app: FastAPI):
         logger.info("ChargeCheck application starting")
-
         try:
             yield
         finally:
+            for provider in app.state.gateway.providers:
+                await provider.close()
             await close_db()
             logger.info("ChargeCheck application stopped")
 
@@ -35,17 +38,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         lifespan=lifespan,
     )
 
+    recorder = make_recorder(SessionLocal) if SessionLocal is not None else None
     app.state.settings = settings
+    app.state.gateway = build_gateway(settings, recorder)
+    app.state.system_prompt = (settings.prompts_dir / "chat_system_v1.md").read_text(
+        encoding="utf-8"
+    )
 
     app.middleware("http")(request_context)
     register_error_handlers(app)
 
     app.include_router(health.router)
 
-    from fastapi import APIRouter
-
     v1 = APIRouter(prefix="/v1")
     v1.include_router(documents.router)
+    v1.include_router(chat.router)
     app.include_router(v1)
 
     return app

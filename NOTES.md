@@ -159,3 +159,32 @@ Measure lead time from merging a commit into `main` until the production smoke t
 ### One thing that went wrong today, and how I fixed it
 
 One scanned PDF failed with `no_text_layer`. I installed Tesseract OCR and reran the parser with `--retry-failed --ocr eng`. It successfully extracted 17 pages.
+
+## D08 - LLM Gateway
+
+### LLM Configuration
+- Primary provider: Google Gemini.
+- Fallback provider: Groq.
+- API keys are stored locally in `.env`.
+- `.env.example` contains blank key placeholders.
+- Provider configuration uses OpenAI-compatible API endpoints.
+
+### Gateway and Database
+- Added a centralized LLM gateway with retry handling and circuit breakers.
+- Added primary and fallback provider support.
+- Added `llm_calls` database migration and usage recording.
+- Added daily usage reporting with token and INR cost totals.
+
+### Chat API
+- `POST /v1/chat` supports JSON and Server-Sent Events streaming.
+- `GET /v1/usage` reports daily LLM usage.
+- System prompt: `prompts/chat_system_v1.md`.
+
+### CLI and Docker
+- Added `scripts/ask.py` for command-line banking questions.
+- Dockerfile copies the `prompts` directory.
+
+### Testing
+- Chat API tests: 7 passed.
+- Full test suite: 63 passed, 3 skipped.
+- Python syntax checks passed for the CLI and database usage recorder.

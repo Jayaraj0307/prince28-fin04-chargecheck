@@ -7,8 +7,10 @@ from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from chargecheck.config import Settings
+from chargecheck.db.llm_calls import UsageRepository
 from chargecheck.db.repository import DocumentRepository
 from chargecheck.db.session import get_session
+from chargecheck.llm.gateway import LLMGateway
 from chargecheck.store import RecordStore
 
 
@@ -20,10 +22,20 @@ def get_store(request: Request) -> RecordStore:
     return request.app.state.store
 
 
+def get_gateway(request: Request) -> LLMGateway:
+    return request.app.state.gateway
+
+
 async def get_repo(
     session: Annotated[AsyncSession, Depends(get_session)],
 ) -> DocumentRepository:
     return DocumentRepository(session)
+
+
+async def get_usage_repo(
+    session: Annotated[AsyncSession, Depends(get_session)],
+) -> UsageRepository:
+    return UsageRepository(session)
 
 
 async def check_db(
@@ -36,3 +48,5 @@ async def check_db(
 SettingsDep = Annotated[Settings, Depends(get_app_settings)]
 StoreDep = Annotated[RecordStore, Depends(get_store)]
 RepoDep = Annotated[DocumentRepository, Depends(get_repo)]
+GatewayDep = Annotated[LLMGateway, Depends(get_gateway)]
+UsageDep = Annotated[UsageRepository, Depends(get_usage_repo)]
