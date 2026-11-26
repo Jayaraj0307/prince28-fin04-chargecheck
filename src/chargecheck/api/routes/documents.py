@@ -15,8 +15,20 @@ async def list_documents(
     q: Annotated[str | None, Query(max_length=200)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
     offset: Annotated[int, Query(ge=0)] = 0,
+    doc_kind: Annotated[str | None, Query(max_length=80)] = None,
+    language: Annotated[str | None, Query(max_length=10)] = None,
+    bank: Annotated[str | None, Query(max_length=80)] = None,
+    charge_type: Annotated[str | None, Query(max_length=80)] = None,
 ) -> dict:
-    documents = await repo.list(q=q, limit=limit, offset=offset)
+    documents = await repo.list(
+        q=q,
+        limit=limit,
+        offset=offset,
+        doc_kind=doc_kind,
+        language=language,
+        bank=bank,
+        charge_type=charge_type,
+    )
 
     return {
         "total": len(documents),
@@ -28,6 +40,7 @@ async def list_documents(
                 "external_id": doc.external_id,
                 "title": doc.title,
                 "doc_type": doc.doc_type,
+                "metadata": doc.metadata_,
             }
             for doc in documents
         ],
@@ -52,4 +65,5 @@ async def get_document(
         "external_id": document.external_id,
         "title": document.title,
         "doc_type": document.doc_type,
+        "metadata": document.metadata_,
     }
