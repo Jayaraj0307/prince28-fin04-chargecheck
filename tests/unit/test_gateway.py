@@ -6,7 +6,6 @@ from chargecheck.llm.gateway import (
     FakeLLM,
     LLMError,
     LLMGateway,
-    LLMUnavailable,
 )
 
 
