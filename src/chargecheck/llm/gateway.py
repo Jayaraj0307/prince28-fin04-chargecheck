@@ -1,4 +1,3 @@
-
 """One door to every LLM provider.
 
 The rest of the app calls gateway.generate() or gateway.stream() and never knows which
@@ -96,9 +95,7 @@ class OpenAICompatProvider:
         self.name, self.model = name, model
         self._url = base_url.rstrip("/") + "/chat/completions"
         self._headers = {"Authorization": f"Bearer {api_key}"}
-        self._client = client or httpx.AsyncClient(
-            timeout=httpx.Timeout(timeout, connect=10.0)
-        )
+        self._client = client or httpx.AsyncClient(timeout=httpx.Timeout(timeout, connect=10.0))
 
     def _body(
         self,
@@ -138,9 +135,7 @@ class OpenAICompatProvider:
     ) -> Reply:
         body = self._body(messages, temperature, False, response_format)
         try:
-            response = await self._client.post(
-                self._url, headers=self._headers, json=body
-            )
+            response = await self._client.post(self._url, headers=self._headers, json=body)
         except httpx.TransportError as exc:
             raise self._network_error(exc) from exc
 
@@ -204,9 +199,7 @@ class OpenAICompatProvider:
 class FakeLLM:
     """A scripted provider for tests."""
 
-    def __init__(
-        self, name: str = "fake", model: str = "fake-1", script: list | None = None
-    ):
+    def __init__(self, name: str = "fake", model: str = "fake-1", script: list | None = None):
         self.name, self.model = name, model
         self.script = list(script or [])
         self.calls = 0
@@ -241,9 +234,7 @@ class FakeLLM:
 class CircuitBreaker:
     """Stop calling a provider after repeated failures."""
 
-    def __init__(
-        self, threshold: int = 3, cooldown: float = 30.0, clock=time.monotonic
-    ) -> None:
+    def __init__(self, threshold: int = 3, cooldown: float = 30.0, clock=time.monotonic) -> None:
         self.threshold, self.cooldown, self._clock = threshold, cooldown, clock
         self.failures = 0
         self._opened_at: float | None = None
@@ -281,8 +272,7 @@ class LLMGateway:
     ) -> None:
         self.providers = providers
         self.breakers = {
-            p.name: CircuitBreaker(breaker_threshold, breaker_cooldown, clock)
-            for p in providers
+            p.name: CircuitBreaker(breaker_threshold, breaker_cooldown, clock) for p in providers
         }
         self._recorder, self._usd_inr = recorder, usd_inr
         self._max_attempts, self._sleep, self._clock = max_attempts, sleep, clock
@@ -308,9 +298,7 @@ class LLMGateway:
             except Exception:
                 logger.exception("could not record the llm call")
 
-    def _result(
-        self, provider, messages, reply: Reply, started: float, attempts: int, index: int
-    ):
+    def _result(self, provider, messages, reply: Reply, started: float, attempts: int, index: int):
         prompt = " ".join(message["content"] for message in messages)
         tokens_in = reply.tokens_in or estimate_tokens(prompt)
         tokens_out = reply.tokens_out or estimate_tokens(reply.text)
@@ -323,9 +311,7 @@ class LLMGateway:
             latency_ms=int((self._clock() - started) * 1000),
             attempts=attempts,
             fallback_used=index > 0,
-            cost_inr=cost_inr(
-                provider.model, tokens_in, tokens_out, self._usd_inr
-            ),
+            cost_inr=cost_inr(provider.model, tokens_in, tokens_out, self._usd_inr),
         )
 
     @staticmethod
@@ -369,9 +355,7 @@ class LLMGateway:
 
                 breaker.success()
                 result = self._result(provider, messages, reply, started, attempt, index)
-                await self._record(
-                    provider, purpose, prompt_version, **self._fields(result)
-                )
+                await self._record(provider, purpose, prompt_version, **self._fields(result))
                 return result
 
             breaker.failure()
@@ -417,18 +401,14 @@ class LLMGateway:
                     error=str(exc)[:300],
                 )
                 if pieces:
-                    raise LLMUnavailable(
-                        f"{provider.name} failed mid-answer: {exc}"
-                    ) from exc
+                    raise LLMUnavailable(f"{provider.name} failed mid-answer: {exc}") from exc
                 problems.append(f"{provider.name}: {exc}")
                 continue
 
             breaker.success()
             usage.text = "".join(pieces)
             result = self._result(provider, messages, usage, started, 1, index)
-            await self._record(
-                provider, purpose, prompt_version, **self._fields(result)
-            )
+            await self._record(provider, purpose, prompt_version, **self._fields(result))
             yield result
             return
 

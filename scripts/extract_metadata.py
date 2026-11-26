@@ -1,4 +1,3 @@
-
 """Extract and store validated metadata for parsed ChargeCheck documents."""
 
 import argparse

@@ -1,4 +1,3 @@
-
 """Compare versioned classification prompts against a labelled test set."""
 
 import argparse
@@ -29,9 +28,7 @@ def load_rows():
 
 
 def cache_key(prompt, question):
-    return hashlib.sha256(
-        f"{prompt}\n{question}".encode("utf-8")
-    ).hexdigest()
+    return hashlib.sha256(f"{prompt}\n{question}".encode()).hexdigest()
 
 
 def update_notes(table):
@@ -93,9 +90,7 @@ async def main():
                     if last_call and wait > 0:
                         await asyncio.sleep(wait)
 
-                    result_label, result = await classify(
-                        gateway, prompt, name, question
-                    )
+                    result_label, result = await classify(gateway, prompt, name, question)
                     last_call = time.monotonic()
                     got = result_label
                     tokens = result.tokens_in
@@ -104,9 +99,7 @@ async def main():
                         "got": got,
                         "tokens_in": tokens,
                     }
-                    CACHE.write_text(
-                        json.dumps(cache, indent=2), encoding="utf-8"
-                    )
+                    CACHE.write_text(json.dumps(cache, indent=2), encoding="utf-8")
 
                 results.append({"label": row["label"], "got": got})
                 total_tokens += tokens

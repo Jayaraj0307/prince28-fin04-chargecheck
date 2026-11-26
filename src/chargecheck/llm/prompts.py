@@ -12,11 +12,7 @@ def read_prompt(directory: Path, name: str) -> str:
 
 def versions(directory: Path, task: str) -> list[str]:
     """Return prompt versions oldest first."""
-    names = [
-        p.stem
-        for p in directory.glob(f"{task}_v*.md")
-        if _VERSION.search(p.stem)
-    ]
+    names = [p.stem for p in directory.glob(f"{task}_v*.md") if _VERSION.search(p.stem)]
     return sorted(names, key=lambda name: int(_VERSION.search(name).group(1)))
 
 

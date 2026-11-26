@@ -36,7 +36,7 @@ def test_parse_label(reply, expected):
 def test_build_messages():
     messages = build_messages("Router instructions", "  What are my charges?  ")
     assert messages[0]["content"] == "Router instructions"
-    assert "<question>\nWhat are my charges?\n</question>" == messages[1]["content"]
+    assert messages[1]["content"] == "<question>\nWhat are my charges?\n</question>"
 
 
 @pytest.mark.asyncio
@@ -68,10 +68,10 @@ def test_find_leaks():
 def test_prompt_versions_sorted():
     found = versions(ROOT / "prompts", "classify")
     assert found == [
-    "classify_v1",
-    "classify_v2",
-    "classify_v3",
-    "classify_v4",
+        "classify_v1",
+        "classify_v2",
+        "classify_v3",
+        "classify_v4",
     ]
 
 

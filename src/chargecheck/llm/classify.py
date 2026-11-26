@@ -18,11 +18,7 @@ def build_messages(prompt: str, question: str) -> list[dict[str, str]]:
 def parse_label(reply: str, labels: tuple[str, ...] = LABELS) -> str:
     """Parse exactly one valid label."""
     text = re.sub(r"off[\s-]+topic", "off_topic", reply.lower())
-    found = {
-        label
-        for label in labels
-        if re.search(rf"(?<![a-z_]){label}(?![a-z_])", text)
-    }
+    found = {label for label in labels if re.search(rf"(?<![a-z_]){label}(?![a-z_])", text)}
     return found.pop() if len(found) == 1 else "invalid"
 
 
@@ -40,17 +36,10 @@ async def classify(
 
 def accuracy(rows: list[dict]) -> float:
     """Calculate the proportion of correct classifications."""
-    return (
-        sum(row["got"] == row["label"] for row in rows) / len(rows)
-        if rows
-        else 0.0
-    )
+    return sum(row["got"] == row["label"] for row in rows) / len(rows) if rows else 0.0
 
 
 def find_leaks(prompt: str, questions: list[str]) -> list[str]:
     """Find test questions accidentally included in the prompt."""
     text = " ".join(prompt.lower().split())
-    return [
-        q for q in questions
-        if " ".join(q.lower().split()) in text
-    ]
+    return [q for q in questions if " ".join(q.lower().split()) in text]

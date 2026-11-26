@@ -1,4 +1,3 @@
-
 """Structured output: extract and validate document metadata before storage."""
 
 import asyncio
@@ -21,7 +20,6 @@ from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
 
 from chargecheck.db.models import Document, Page
 from chargecheck.llm.gateway import LLMGateway, LLMUnavailable
-
 
 Short = Annotated[
     str,
@@ -86,8 +84,7 @@ def explain(error: Exception) -> str:
     if isinstance(error, ValidationError):
         problems = error.errors()[:6]
         return "; ".join(
-            f"{'.'.join(map(str, p['loc'])) or 'object'}: {p['msg']}"
-            for p in problems
+            f"{'.'.join(map(str, p['loc'])) or 'object'}: {p['msg']}" for p in problems
         )
     return str(error)
 
@@ -116,10 +113,7 @@ async def extract(
 ) -> Extraction:
     """Generate JSON and retry when parsing or schema validation fails."""
     json_schema = schema.model_json_schema()
-    system = (
-        f"{prompt}\n\nThe JSON object must match this JSON schema:\n"
-        f"{json.dumps(json_schema)}"
-    )
+    system = f"{prompt}\n\nThe JSON object must match this JSON schema:\n{json.dumps(json_schema)}"
 
     messages = [
         {"role": "system", "content": system},
@@ -197,12 +191,7 @@ async def document_text(
     chars: int,
 ) -> str:
     """Read the first three pages, limited to the requested character count."""
-    stmt = (
-        select(Page.text)
-        .where(Page.document_id == document.id)
-        .order_by(Page.page_no)
-        .limit(3)
-    )
+    stmt = select(Page.text).where(Page.document_id == document.id).order_by(Page.page_no).limit(3)
     return "\n\n".join(await session.scalars(stmt))[:chars]
 
 
@@ -256,9 +245,7 @@ async def run(
 
     clash = RESERVED & set(schema.model_fields)
     if clash:
-        raise ValueError(
-            f"rename these fields, the parser already uses them: {sorted(clash)}"
-        )
+        raise ValueError(f"rename these fields, the parser already uses them: {sorted(clash)}")
 
     counts: Counter = Counter()
 
@@ -290,17 +277,11 @@ async def run(
                     break
                 except LLMUnavailable as error:
                     if waited:
-                        echo(
-                            "stopped: no model can answer "
-                            f"({str(error)[:160]})"
-                        )
+                        echo(f"stopped: no model can answer ({str(error)[:160]})")
                         counts["stopped"] = 1
                         return counts
 
-                    echo(
-                        "no model can answer right now "
-                        "(rate limit?): waiting 60 s"
-                    )
+                    echo("no model can answer right now (rate limit?): waiting 60 s")
                     await sleep(60)
 
             await save(session, document, result, version)
@@ -316,10 +297,7 @@ async def run(
                 counts["ok"] += 1
                 if result.attempts > 1:
                     counts["repaired"] += 1
-                    echo(
-                        f"repaired {label}  after: "
-                        f"{result.errors[0][:90]}"
-                    )
+                    echo(f"repaired {label}  after: {result.errors[0][:90]}")
 
             if number % 10 == 0:
                 echo(f"... {number} of {len(todo)} documents")
