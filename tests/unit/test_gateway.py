@@ -1,4 +1,3 @@
-
 import pytest
 
 from chargecheck.llm.gateway import (
@@ -14,9 +13,7 @@ async def test_gateway_fallback():
     primary = FakeLLM(
         name="gemini",
         model="gemini-test",
-        script=[
-            LLMError("Gemini failed", retryable=False)
-        ],
+        script=[LLMError("Gemini failed", retryable=False)],
     )
 
     fallback = FakeLLM(
@@ -30,9 +27,7 @@ async def test_gateway_fallback():
         max_attempts=1,
     )
 
-    result = await gateway.generate(
-        [{"role": "user", "content": "Hello"}]
-    )
+    result = await gateway.generate([{"role": "user", "content": "Hello"}])
 
     assert result.text == "Fallback answer"
     assert result.provider == "groq"
