@@ -1,4 +1,3 @@
-
 """ARQ worker startup and shutdown configuration."""
 
 import asyncio
@@ -21,9 +20,7 @@ async def startup(ctx: dict) -> None:
 
     engine = make_engine(settings)
     sessionmaker = make_sessionmaker(engine)
-    client = make_client(
-        max_concurrency=settings.ingest_concurrency
-    )
+    client = make_client(max_concurrency=settings.ingest_concurrency)
     gateway = build_gateway(settings)
 
     prompt_path = settings.prompts_dir / "extract_v1.md"
@@ -39,9 +36,7 @@ async def startup(ctx: dict) -> None:
             delay=0.5,
             sleep=asyncio.sleep,
         ),
-        download_slots=asyncio.Semaphore(
-            settings.ingest_concurrency
-        ),
+        download_slots=asyncio.Semaphore(settings.ingest_concurrency),
         gateway=gateway,
         prompt=prompt,
         pace_lock=asyncio.Lock(),
@@ -83,9 +78,7 @@ class WorkerSettings:
     functions = [ingest_document]
     on_startup = startup
     on_shutdown = shutdown
-    redis_settings = RedisSettings.from_dsn(
-        get_settings().redis_url
-    )
+    redis_settings = RedisSettings.from_dsn(get_settings().redis_url)
     max_jobs = get_settings().ingest_concurrency
     job_timeout = get_settings().ingest_job_timeout
     max_tries = get_settings().ingest_max_tries

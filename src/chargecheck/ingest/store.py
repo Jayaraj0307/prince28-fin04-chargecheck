@@ -1,4 +1,4 @@
-﻿"""Save parsed documents and pages, or record parsing failures."""
+"""Save parsed documents and pages, or record parsing failures."""
 
 from pathlib import Path
 
@@ -17,9 +17,7 @@ def document_id(sha256: str) -> str:
 
 async def parsed_ids(session: AsyncSession) -> set[str]:
     """Return IDs of documents that have been parsed."""
-    rows = await session.scalars(
-        select(Document.external_id).where(Document.doc_type != "record")
-    )
+    rows = await session.scalars(select(Document.external_id).where(Document.doc_type != "record"))
     return set(rows)
 
 
@@ -88,9 +86,7 @@ async def save_document(
         )
 
     # Remove an old parsing failure for this file.
-    await session.execute(
-        delete(ParseFailure).where(ParseFailure.path == record["path"])
-    )
+    await session.execute(delete(ParseFailure).where(ParseFailure.path == record["path"]))
 
     # Document, pages and failure cleanup commit together.
     await session.commit()

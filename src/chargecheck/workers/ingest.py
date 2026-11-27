@@ -1,4 +1,3 @@
-
 """Background worker for downloading, parsing, storing and extracting documents."""
 
 import asyncio
@@ -73,9 +72,7 @@ async def ingest_document(ctx: dict, item_id: int) -> None:
                     return
 
                 if result.get("status") != "downloaded":
-                    raise RuntimeError(
-                        result.get("error", "Document download failed.")
-                    )
+                    raise RuntimeError(result.get("error", "Document download failed."))
 
                 record.update(result)
                 path = Path(record["path"])
@@ -89,17 +86,13 @@ async def ingest_document(ctx: dict, item_id: int) -> None:
 
             # Calculate the content hash if it is missing.
             if not record.get("sha256"):
-                record["sha256"] = hashlib.sha256(
-                    path.read_bytes()
-                ).hexdigest()
+                record["sha256"] = hashlib.sha256(path.read_bytes()).hexdigest()
 
             record["path"] = str(path)
             external_id = document_id(record["sha256"])
 
             existing = await session.scalar(
-                select(Document).where(
-                    Document.external_id == external_id
-                )
+                select(Document).where(Document.external_id == external_id)
             )
 
             if existing is None:
@@ -107,9 +100,7 @@ async def ingest_document(ctx: dict, item_id: int) -> None:
                 await save_document(session, record, parsed)
 
                 existing = await session.scalar(
-                    select(Document).where(
-                        Document.external_id == external_id
-                    )
+                    select(Document).where(Document.external_id == external_id)
                 )
 
             # Extract metadata for parsed documents, not legacy records.
@@ -154,11 +145,7 @@ async def ingest_document(ctx: dict, item_id: int) -> None:
                     )
 
             item.status = "done"
-            item.pages = (
-                (existing.metadata_ or {}).get("pages", 0)
-                if existing is not None
-                else 0
-            )
+            item.pages = (existing.metadata_ or {}).get("pages", 0) if existing is not None else 0
             item.error = ""
             await session.commit()
 
