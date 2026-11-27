@@ -7,7 +7,7 @@ from fastapi import APIRouter, FastAPI
 
 from chargecheck.api.errors import register_error_handlers
 from chargecheck.api.middleware import request_context
-from chargecheck.api.routes import chat, documents, health
+from chargecheck.api.routes import chat, documents, health, ingest
 from chargecheck.config import Settings, get_settings
 from chargecheck.db.llm_calls import make_recorder
 from chargecheck.db.session import SessionLocal, close_db
@@ -53,6 +53,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     v1 = APIRouter(prefix="/v1")
     v1.include_router(documents.router)
     v1.include_router(chat.router)
+    v1.include_router(ingest.router)
     app.include_router(v1)
 
     return app
