@@ -287,17 +287,28 @@ PDF_PARSERS = {"pymupdf": parse_pdf_pymupdf, "pypdf": parse_pdf_pypdf}
 
 
 def parse_file(path: Path, pdf_parser: str = "pymupdf") -> ParsedDoc:
-    """Pick the parser by file type. Raises ParseError, never anything else."""
+    """Pick the parser by file type. Automatically OCR scanned PDFs."""
     suffix = path.suffix.lower()
+
     try:
         if suffix == ".pdf":
-            return PDF_PARSERS[pdf_parser](path)
+            try:
+                return PDF_PARSERS[pdf_parser](path)
+            except ParseError as exc:
+                if exc.reason != "no_text_layer":
+                    raise
+
+                return parse_pdf_ocr(path)
+
         if suffix in {".html", ".htm"}:
             return parse_html(path)
+
         if suffix in TEXT_TYPES | DATA_TYPES:
             return parse_text(path)
+
     except ParseError:
         raise
-    except Exception as exc:  # a parser bug must become a recorded failure, not a crash
+    except Exception as exc:
         raise ParseError("crash", f"{type(exc).__name__}: {exc}") from exc
+
     raise ParseError("unsupported_type", suffix or "no file extension")
