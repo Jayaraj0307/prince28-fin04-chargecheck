@@ -75,14 +75,25 @@ def test_a_table_becomes_markdown(tmp_path):
     assert text.count("Paracetamol") == 1  # the cells are not repeated as loose text
 
 
-def test_a_scanned_pdf_is_a_recorded_failure_not_a_crash(tmp_path):
+def test_a_scanned_pdf_reports_ocr_unavailable(tmp_path, monkeypatch):
     doc = pymupdf.open()
     for _ in range(3):
-        doc.new_page()  # pages with no text layer, like a scan
+        doc.new_page()
     doc.save(tmp_path / "scan.pdf")
+    doc.close()
+
+    def unavailable_ocr(path, language="eng"):
+        raise ParseError("ocr_unavailable", "Tesseract is not installed")
+
+    monkeypatch.setattr(
+        "chargecheck.ingest.parse.parse_pdf_ocr",
+        unavailable_ocr,
+    )
+
     with pytest.raises(ParseError) as error:
         parse_file(tmp_path / "scan.pdf")
-    assert error.value.reason == "no_text_layer"
+
+    assert error.value.reason == "ocr_unavailable"
 
 
 def test_a_broken_file_is_reported_as_corrupt(tmp_path):

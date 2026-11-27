@@ -246,3 +246,44 @@ One scanned PDF failed with `no_text_layer`. I installed Tesseract OCR and reran
 - Metadata extraction unit tests: 5 passed.
 - Local API filter checks passed.
 - Manual verification completed: 5/5 records (IDs 6–10). Corrected bank metadata for Canara Bank (ID 9) and Bank of Baroda (ID 8) directly in Neon.
+
+# D10 - Background Ingestion and Concurrency
+
+## Implementation
+- Redis queue configured.
+- ARQ background worker implemented.
+- Ingestion API and job progress endpoint implemented.
+- Database tables for ingestion jobs and items added.
+- OCR support configured for scanned PDFs.
+- PostgreSQL conflict-safe document insertion implemented using ON CONFLICT DO NOTHING.
+
+## Verification
+- Unit and integration tests: 85 passed, 4 skipped.
+- Ruff lint: passed.
+- Database migration: up to date.
+- Redis connection: successful.
+- Worker startup: successful.
+- Successful ingestion items: 11 done.
+- Historical ingestion failures: 4 retained for audit.
+- Worker restart recovery: 20/20 done, 0 failed.
+- Actual PDF ingestion: verified.
+- Concurrent ingestion test: 5/5 done, 0 failed.
+- Duplicate-document verification: exactly 1 document row for the shared PDF hash.
+- Dead-letter endpoint: verified; 9 failed items returned.
+
+## Concurrency Fix
+The earlier recovery test exposed a race condition when multiple workers processed the same PDF simultaneously.
+
+The document insertion logic was updated to use PostgreSQL ON CONFLICT DO NOTHING.
+
+The five-item concurrency test confirmed that all five items completed successfully and only one document row was created for the shared PDF hash.
+
+## Dead-Letter Verification
+- Admin-token authentication successful.
+- 9 failed ingestion items returned.
+- 5 failures from the initial concurrency test.
+- 4 historical failures retained for audit.
+
+## Remaining Tasks
+1. Deploy and test live ingestion on Render.
+2. Complete final Git commit, push, merge, and tag.

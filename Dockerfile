@@ -1,4 +1,5 @@
-﻿# Stage 1: Build the virtual environment
+﻿
+# Stage 1: Build the virtual environment
 FROM python:3.12-slim AS builder
 
 COPY --from=ghcr.io/astral-sh/uv:0.11.32 /uv /uvx /bin/
@@ -19,13 +20,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --locked --no-dev --no-editable
 
 # Stage 2: Runtime image
-# Stage 2: Runtime image
 FROM python:3.12-slim AS runtime
 
 ARG GIT_SHA=dev
 ENV GIT_SHA=${GIT_SHA}
 
 WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends tesseract-ocr \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN groupadd --system app && useradd --system --gid app --home-dir /app app
 
@@ -35,12 +39,12 @@ COPY --chown=app:app migrations ./migrations
 COPY --chown=app:app scripts ./scripts
 COPY --chown=app:app data ./data
 COPY --chown=app:app prompts ./prompts
+COPY --chown=app:app src ./src
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1
-
-ENV APP_ENV=production
+    PYTHONDONTWRITEBYTECODE=1 \
+    APP_ENV=production
 
 USER app
 
