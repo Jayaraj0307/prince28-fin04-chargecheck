@@ -52,11 +52,28 @@ services:
       LOG_LEVEL: INFO
       DATABASE_URL: postgresql+asyncpg://chargecheck:chargecheck_local@db:5432/chargecheck
       DATA_FILE: data/sample_records.json
+      REDIS_URL: redis://redis:6379
     depends_on:
       migrate:
         condition: service_completed_successfully
       redis:
         condition: service_healthy
+
+  worker:
+    build: .
+    container_name: chargecheck-worker
+    environment:
+      APP_ENV: production
+      LOG_LEVEL: INFO
+      DATABASE_URL: postgresql+asyncpg://chargecheck:chargecheck_local@db:5432/chargecheck
+      REDIS_URL: redis://redis:6379
+    command: ["arq", "chargecheck.workers.main.WorkerSettings"]
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
 volumes:
   postgres_data:
