@@ -124,6 +124,8 @@ class LlmCall(Base):
     cost_inr: Mapped[float] = mapped_column(Numeric(12, 6), server_default="0")
     fallback_used: Mapped[bool] = mapped_column(default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
+
+
 class IngestJob(Base):
     """Track one ingestion request."""
 
@@ -131,9 +133,7 @@ class IngestJob(Base):
 
     id: Mapped[str] = mapped_column(String(32), primary_key=True)
     requested: Mapped[int]
-    created_at: Mapped[datetime] = mapped_column(
-        DateTime(timezone=True), server_default=func.now()
-    )
+    created_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), server_default=func.now())
 
     items: Mapped[list["IngestItem"]] = relationship(
         back_populates="job", cascade="all, delete-orphan"

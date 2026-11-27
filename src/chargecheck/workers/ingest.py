@@ -1,4 +1,3 @@
-
 """Background worker for processing ingestion items."""
 
 import asyncio
@@ -44,9 +43,7 @@ async def ingest_document(ctx: dict, item_id: int) -> None:
 
             async with session.begin():
                 existing = await session.scalar(
-                    select(Document).where(
-                        Document.external_id == document_id(record["sha256"])
-                    )
+                    select(Document).where(Document.external_id == document_id(record["sha256"]))
                 )
 
             if existing is not None:

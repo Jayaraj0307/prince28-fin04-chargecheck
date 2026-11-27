@@ -1,4 +1,3 @@
-
 """ARQ worker startup and shutdown configuration."""
 
 from arq.connections import RedisSettings

@@ -1,4 +1,3 @@
-
 """API endpoints for background document ingestion."""
 
 import secrets
@@ -41,11 +40,7 @@ async def start_ingestion(
     repository = IngestRepository(session)
     job_id = await repository.create(body.records)
 
-    item_ids = list(
-        await session.scalars(
-            select(IngestItem.id).where(IngestItem.job_id == job_id)
-        )
-    )
+    item_ids = list(await session.scalars(select(IngestItem.id).where(IngestItem.job_id == job_id)))
 
     queue = await Queue.connect()
     try:

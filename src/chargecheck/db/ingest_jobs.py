@@ -1,4 +1,3 @@
-
 """Database operations for background ingestion jobs."""
 
 from sqlalchemy import func, select
@@ -12,9 +11,7 @@ class IngestRepository:
         self.session = session
 
     async def known_ids(self) -> set[str]:
-        result = await self.session.execute(
-            select(IngestItem.record["url"].as_string())
-        )
+        result = await self.session.execute(select(IngestItem.record["url"].as_string()))
         return {value for value in result.scalars() if value}
 
     async def create(self, records: list[dict]) -> str:
@@ -25,9 +22,7 @@ class IngestRepository:
         self.session.add(job)
 
         for record in records:
-            self.session.add(
-                IngestItem(job_id=job_id, record=record)
-            )
+            self.session.add(IngestItem(job_id=job_id, record=record))
 
         await self.session.commit()
         return job_id
@@ -80,8 +75,6 @@ class IngestRepository:
 
     async def open_item_ids(self) -> list[int]:
         result = await self.session.execute(
-            select(IngestItem.id).where(
-                IngestItem.status.in_(["queued", "running"])
-            )
+            select(IngestItem.id).where(IngestItem.status.in_(["queued", "running"]))
         )
         return list(result.scalars())
